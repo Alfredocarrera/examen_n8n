@@ -1,0 +1,336 @@
+{
+  "name": "Hotel_Casa_Jacaranda",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Eres un asistente de un hotel boutique Casa  Jacaranda  el cual administrara las reservas con los clientes. \nUsaras un lenguaje amable y coordial con ellos. Tus funciones seran:\n\nDebes leer la informacion de registro_formulario.\nDebes leer la informacion de tool Leer_informacion_habitacion\nDebes actualizar la tool Actualizacion_reserva\n\n* Al recibir una nueva respuesta del formulario Casa Jacaranda Reserva deberara realizar la siguientes verificaciones en este orden de precedenciaa:\n  \nUna solicitud es inválida si se cumple cualquiera de estas condiciones:\n    La fecha de entrada es anterior a la fecha actual.\n    La fecha de salida es igual o anterior a la fecha de entrada.\n    El número de huéspedes es menor que 1 o mayor que 4.\n    La estancia supera 14 noches.\n\nDisponibilidad y asignación\n\n    Una habitación está disponible para un rango de fechas si no tiene ninguna reserva Confirmada que se cruce con ese rango. \n    Las reservas con otro estado no bloquean la habitación. \n    El día de salida de una reserva puede ser el día de entrada de otra.\n    Una habitación es apta si su tipo coincide con el solicitado y su capacidad es mayor o igual al número de huéspedes.\n    Si hay varias habitaciones aptas y disponibles, se asigna la de menor número de huespedes.\n    Si no hay ninguna, se busca una alternativa. \n   La habitación disponible de menor precio por noche, de cualquier otro tipo.\n   La alternativa solo se ofrece por correo; no se reserva. Esto lo verificaras en la tools Leer_informacion_habitacion\n\n   Peticiones especiales se leen de archivo registro_formulario\n   Cada petición identificada en el texto libre debe clasificarse en una de tres categorías:\n\n    ATENDIDA: el hotel puede cumplirla según las políticas.\n    NO PERMITIDA: contradice una política del hotel.\n    REVISIÓN PERSONAL: no está garantizada o no está contemplada en las políticas.\n\nEl hotel no debe prometer nada que las políticas no respalden.\nDebes comparar las peticiones especiales cumplan con estas politicas del hotel acontinuacion:\n \n    *Check-in: desde las 3:00 p. m. Check-out: hasta las 12:00 m.\n    *El desayuno está incluido en todas las tarifas.\n    *Cuna para bebé: gratis, se puede solicitar.\n    *Decoración romántica (aniversarios, celebraciones): se ofrece con un cargo único de COP 60.000 por estancia, que se suma al total.\n    *Llegadas después de las 11:00 p. m.: no se garantizan; requieren aprobación del personal.\n    *Alergias o restricciones alimentarias: se registran para la cocina, sin costo.\n    *Mascotas: no se permiten.\n    *Cama adicional: el hotel no la ofrece.\n    *Cualquier otra petición no contemplada aquí requiere revisión del personal. \n\nSi todo esto se cumple actualizaras y añades la fila en el archivo Hotel Casa Jacaranda  en la hoja Actualizacion_reserva  con este formato:\nCada fila nueva debe cumplir:\n\n    En la columna id_reserva: formato R-0000, consecutivo respecto a la última fila de la hoja Actualizacion_reserva.\n    fecha_registro: fecha y hora en que se procesó la solicitud.\n    peticiones_especiales: texto tal como lo escribió el huésped.\n    notas_internas:\n    Reserva Confirmada con peticiones: lista separada por | con el formato <resumen corto>: <CATEGORÍA>.\n    Confirmada sin peticiones: Sin peticiones.\n    Otros estados: el motivo en una frase corta.\n    estado: exactamente Confirmada, Sin disponibilidad o Solicitud inválida.\n    habitacion, noches y total se llenan solo cuando el estado es Confirmada; en otros casos quedan vacíos.\n    No se debe modificar ni eliminar ninguna fila existente ni la hoja Habitaciones.\n\n\nComo salida debes proporsionarme la siguiete salida  \nid_registro, estado, nombre del usuario, correo electronico, fecha entrada, fecha salida, mensaje segun el estado. Solo esa informacion.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        352,
+        -32
+      ],
+      "id": "f7828e04-577e-4dbd-8c13-a6aefc80603e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        208
+      ],
+      "id": "bca69699-8091-4441-a1dd-dc4c96153e6e",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $workflow.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        272,
+        208
+      ],
+      "id": "4d824005-d6cf-47c7-b6b5-8e42618f4a89",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1bqLPbVfI4RDakN9kQ_2LH3rOviPHrYUmAW8Uw2lCqhQ",
+          "mode": "list",
+          "cachedResultName": "Hotel Casa Jacaranda Reserva (Respuestas)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bqLPbVfI4RDakN9kQ_2LH3rOviPHrYUmAW8Uw2lCqhQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1956291871,
+          "mode": "list",
+          "cachedResultName": "Habitaciones",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bqLPbVfI4RDakN9kQ_2LH3rOviPHrYUmAW8Uw2lCqhQ/edit#gid=1956291871"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        496,
+        272
+      ],
+      "id": "693a4ba6-c822-45b6-a3d9-1884d5293215",
+      "name": "Leer_informacion_habitaciones",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "MP4vqye5gOn1rClM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1bqLPbVfI4RDakN9kQ_2LH3rOviPHrYUmAW8Uw2lCqhQ",
+          "mode": "list",
+          "cachedResultName": "Hotel Casa Jacaranda Reserva (Respuestas)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bqLPbVfI4RDakN9kQ_2LH3rOviPHrYUmAW8Uw2lCqhQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1754963055,
+          "mode": "list",
+          "cachedResultName": "Reservas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bqLPbVfI4RDakN9kQ_2LH3rOviPHrYUmAW8Uw2lCqhQ/edit#gid=1754963055"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -32
+      ],
+      "id": "1d72d8da-be88-477c-8585-08bb1e7bf3c1",
+      "name": "Registro_formulario",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "Aoq18sqF2ULHmhCo",
+          "name": "Google Sheets Trigger account-alfredoecarreraa@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1bqLPbVfI4RDakN9kQ_2LH3rOviPHrYUmAW8Uw2lCqhQ",
+          "mode": "list",
+          "cachedResultName": "Hotel Casa Jacaranda Reserva (Respuestas)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bqLPbVfI4RDakN9kQ_2LH3rOviPHrYUmAW8Uw2lCqhQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1229705829,
+          "mode": "list",
+          "cachedResultName": "Registro_reserva",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bqLPbVfI4RDakN9kQ_2LH3rOviPHrYUmAW8Uw2lCqhQ/edit#gid=1229705829"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_reserva",
+              "displayName": "id_reserva",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_registro",
+              "displayName": "fecha_registro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "peticiones_especiales",
+              "displayName": "peticiones_especiales",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "numero_habitacion",
+              "displayName": "numero_habitacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "noches",
+              "displayName": "noches",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        720,
+        -32
+      ],
+      "id": "2a1f29b6-b54b-419d-ade7-ec74054224fc",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "MP4vqye5gOn1rClM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1bqLPbVfI4RDakN9kQ_2LH3rOviPHrYUmAW8Uw2lCqhQ",
+          "mode": "list",
+          "cachedResultName": "Hotel Casa Jacaranda Reserva (Respuestas)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bqLPbVfI4RDakN9kQ_2LH3rOviPHrYUmAW8Uw2lCqhQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1804294766,
+          "mode": "list",
+          "cachedResultName": "respuestas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bqLPbVfI4RDakN9kQ_2LH3rOviPHrYUmAW8Uw2lCqhQ/edit#gid=1804294766"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        704,
+        272
+      ],
+      "id": "f82636d4-2a45-4059-b156-602d37966c6f",
+      "name": "Leer_mensajes",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "MP4vqye5gOn1rClM",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer_informacion_habitaciones": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registro_formulario": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer_mensajes": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "acf4eed6-e867-44d1-b03b-abce99d6e788",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fda2ea8c4f75571340c96cb1a399bb31373e1a4b63805c6653af0c3b15c3086d"
+  },
+  "nodeGroups": [],
+  "id": "cNseFr2cSbe0b1mI",
+  "tags": []
+}
